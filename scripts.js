@@ -196,6 +196,11 @@ function populateTable(presetName){
 			...priorityOrder.filter(key => rawAttributes.includes(key)),
 			...rawAttributes.filter(key => !priorityOrder.includes(key)).sort()
 		]
+	else // same preset, data changed: keep the user's dragged order, drop columns that no longer exist, append new ones
+		attributesOrder = [
+			...attributesOrder.filter(key => rawAttributes.includes(key)),
+			...rawAttributes.filter(key => !attributesOrder.includes(key)).sort()
+		]
 	if (lastSortConfig && lastSortConfig.direction !== 'default')
 		outfits.sort((a, b) => {
 			let getVal = (item) => {
@@ -295,6 +300,13 @@ function parseLinesToTree() {
 	return nodes
 }
 let dataFiles = []
+let uploads = [] // each upload is {name, files:[fileText, ...]}, kept in upload order so later folders merge on top
+function sameFiles(a, b) {
+	if(a.length !== b.length) return false
+	let sortedA = [...a].sort()
+	let sortedB = [...b].sort()
+	return sortedA.every((text, index) => text === sortedB[index]) // order-independent, since the file picker's order isn't guaranteed
+}
 function importData() {
 	let input = document.createElement(`input`)
 	input.type = `file`
@@ -302,20 +314,53 @@ function importData() {
 	input.multiple = true
 	input.style.display = `none`
 	input.onchange = async event => {
-		dataFiles = []
-		for(let file of event.target.files) {
+		let files = [...event.target.files].filter(file => file.name.endsWith(`.txt`))
+		if(!files.length) return
+		let base = files[0].webkitRelativePath.split(`/`)[0] || `Upload` // the selected folder's name
+		let texts = []
+		for(let file of files) {
 			try{
-				if(!file.name.endsWith(`.txt`)) continue
-				dataFiles.push(await file.text())
+				texts.push(await file.text())
 			}catch{}
 		}
-		parseLinesToTree()
-		populateTable()
-		document.querySelectorAll('.unavailable').forEach(element => element.classList.remove('unavailable'))
+		let siblings = uploads.filter(upload => upload.base === base) // earlier uploads that share this folder name
+		if(siblings.some(upload => sameFiles(upload.files, texts))) {
+			alert(`"${base}" is already uploaded with identical files.`)
+			return
+		}
+		let name = base
+		for(let n = 2; uploads.some(upload => upload.name === name); n++) name = `${base} (${n})` // first free suffix
+		uploads.push({name, base, files:texts})
+		refreshData()
 	}
 	document.body.appendChild(input)
 	input.click()
 	document.body.removeChild(input)
+}
+function removeUpload(index) {
+	uploads.splice(index, 1)
+	refreshData()
+}
+function escapeHtml(text) {
+	return text.replace(/&/g, `&amp;`).replace(/</g, `&lt;`).replace(/>/g, `&gt;`)
+}
+function renderUploads() {
+	document.getElementById(`uploadList`).innerHTML = uploads
+		.map((upload, index) => `<div onclick="removeUpload(${index})">${escapeHtml(upload.name)}<span class="remove">\u2715</span></div>`)
+		.join(``)
+}
+function refreshData() {
+	dataFiles = uploads.flatMap(upload => upload.files)
+	renderUploads()
+	if(!uploads.length) { // everything deleted, go back to the empty state
+		nodes = []
+		document.getElementById(`content`).innerHTML = ``
+		document.querySelectorAll('.dropdown').forEach(element => element.classList.add('unavailable'))
+		return
+	}
+	parseLinesToTree()
+	populateTable()
+	document.querySelectorAll('.unavailable').forEach(element => element.classList.remove('unavailable'))
 }
 function copyToClipboard(textToCopy) {
 	try{

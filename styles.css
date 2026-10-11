@@ -42,6 +42,11 @@ body{
 			padding: 0;
 			width: 1px;
 		}
+		>[onclick],
+		>.dropdown >.dropButton{
+			cursor: s-resize;
+			padding: .5em 1em;
+		}
 		>[onclick]{
 			cursor: pointer;
 			position: relative;
@@ -52,21 +57,12 @@ body{
 		>[onclick].is-selected{
 			background: rgba(170, 170, 170, 1);
 		}
-		>div{
-			padding: .5em 1em;
-		}
-		>.dropdown{
-			>.dropContent{
-				margin: .5em -.5em;
-			}
-		}
 		>.unavailable{
 			opacity: .5;
 			pointer-events: none;
 			transition: none;
 		}
 		.dropdown{
-			cursor: s-resize;
 			position: relative;
 			z-index: 4;
 			.dropContent{
@@ -321,4 +317,17 @@ body.column-dragging .drag-circle.dragging{
 	background-image: radial-gradient(circle, red .5px, transparent .5px) !important;
 	border-color: red !important;
 	opacity: 1 !important;
+}
+header .dropContent .remove{
+	cursor: pointer;
+	margin-left: 1.5em;
+	opacity: 0;
+	padding: 0 .25em;
+}
+header .dropContent >div:has(.remove):hover{
+	color: hsl(345, 50%, 50%)!important;
+	cursor: pointer;
+	>.remove{
+		opacity: 1;
+	}
 }
