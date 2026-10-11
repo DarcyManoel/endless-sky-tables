@@ -1,4 +1,4 @@
-let generationTextHeader = `#\tthis text was generated using endless-sky-scripts on github\n`
+let generationTextHeader = `#\tthis text was generated using endless-sky-tables on github\n`
 function scriptCheaterSales() {
 	let shipNames = nodes
 		.filter(node => node.line.startsWith(`ship `)) // select only nodes that define ships
