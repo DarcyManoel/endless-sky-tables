@@ -262,8 +262,8 @@ function populateTable(presetName){
 			return `<td>${value}</td>`
 		}).join('')
 		let nameCell = tooltipText
-			? `<td description="${(`${tooltipText.thumbnail || ''}\n\n${tooltipText.description || ''}`).trim().replace(/"/g, `&quot;`)}"><b>${outfitName}</b></td>`
-			: `<td><b>${outfitName}</b></td>`
+			? `<td description="${(`${tooltipText.thumbnail || ''}\n\n${tooltipText.description || ''}`).trim().replace(/"/g, `&quot;`)}">${outfitName}</td>`
+			: `<td>${outfitName}</td>`
 		return `<tr>${nameCell}${dataCells}</tr>`
 		//
 	}).join(``)
