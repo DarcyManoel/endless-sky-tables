@@ -14,10 +14,6 @@
 	font-family: UbuntuSans;
 	src: url(fonts/UbuntuSans-Regular.ttf);
 }
-@font-face{
-	font-family: UbuntuSansBold;
-	src: url(fonts/UbuntuSans-SemiBold.ttf);
-}
 body{
 	background: #1a1a1a;
 	color: lightgrey;
@@ -26,13 +22,9 @@ body{
 	font-family: UbuntuSans;
 	height: 100%;
 	margin: 0;
-	b{
-		font-family: UbuntuSansBold;
-	}
 	header{
 		align-items: center;
 		display: flex;
-		font-family: UbuntuSansBold;
 		font-size: 1.25em;
 		z-index: 4;
 		>:empty{
@@ -173,7 +165,6 @@ body{
 						>.name{
 							cursor: pointer;
 							display: block;
-							font-family: UbuntuSansBold;
 							padding: .2em 1em .2em 1.5em;
 							position: relative;
 							width: 100%;
